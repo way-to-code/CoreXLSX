@@ -212,6 +212,9 @@ public struct Column: Codable, Equatable {
 
   /// Set to `true` when width for related columns differs from the default.
   public let customWidth: Bool?
+
+  /// Whether the column is hidden or not
+  public let hidden: Bool?
 }
 
 /** The primary storage for spreadsheet cells.
@@ -227,12 +230,14 @@ public struct Row: Codable {
   public let height: Double?
   public let customHeight: String?
   public let cells: [Cell]
+  public let hidden: Bool?
 
   enum CodingKeys: String, CodingKey {
     case cells = "c"
     case reference = "r"
     case height = "ht"
     case customHeight
+    case hidden
   }
 }
 
