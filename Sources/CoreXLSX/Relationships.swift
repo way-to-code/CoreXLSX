@@ -130,6 +130,10 @@ public struct Relationship: Codable, Equatable {
       """
       http://purl.oclc.org/ooxml/officeDocument/relationships/extendedProperties
       """
+    case sheetMetadata =
+      """
+      http://schemas.openxmlformats.org/officeDocument/2006/relationships/sheetMetadata
+      """
   }
 
   /// The identifier for this entity.
