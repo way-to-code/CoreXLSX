@@ -140,11 +140,22 @@ public struct Relationship: Codable, Equatable {
       """
   }
 
+  enum CodingKeys: String, CodingKey {
+    case id
+    case rawType = "type"
+    case target
+  }
+
   /// The identifier for this entity.
   public let id: String
 
   /// The type of this entity.
-  public let type: SchemaType
+  public var type: SchemaType? { SchemaType(rawValue: rawType) }
+
+  /// The raw type string.
+  /// This is needed so that Relationship decodes when encountering type strings
+  /// that are missing SchemaType cases.
+  public let rawType: String
 
   /// The path to this entity in the `.xlsx` archive.
   public let target: String
