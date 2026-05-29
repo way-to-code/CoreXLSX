@@ -164,4 +164,48 @@ class WorksheetTests: XCTestCase {
     let ws2 = try decoder.decode(Worksheet.self, from: xml2)
     XCTAssertEqual(ws2.cells(atRows: 1 ... 80).count, 5)
   }
+
+  func testNoSheetProtection() throws {
+    let decoder = XMLDecoder()
+    let ws = try decoder.decode(Worksheet.self, from: xml1)
+    XCTAssertNil(ws.sheetProtection)
+  }
+
+  func testSheetProtectionDecoding() throws {
+    // swiftlint:disable:next line_length
+    let xml = """
+    <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+    <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><dimension ref="A1:A1"/><sheetData/><sheetProtection sheet="1" password="CC3F" selectLockedCells="1" selectUnlockedCells="0" formatCells="0" insertRows="0"/></worksheet>
+    """.data(using: .utf8)!
+
+    let ws = try XMLDecoder().decode(Worksheet.self, from: xml)
+    let protection = try XCTUnwrap(ws.sheetProtection)
+    XCTAssertEqual(protection.sheet, true)
+    XCTAssertEqual(protection.password, "CC3F")
+    XCTAssertEqual(protection.selectLockedCells, true)
+    XCTAssertEqual(protection.selectUnlockedCells, false)
+    XCTAssertEqual(protection.formatCells, false)
+    XCTAssertEqual(protection.insertRows, false)
+    // Attributes not present in the XML remain nil (XLSX default applies):
+    XCTAssertNil(protection.formatColumns)
+    XCTAssertNil(protection.deleteRows)
+    XCTAssertNil(protection.algorithmName)
+  }
+
+  func testSheetProtectionModernHash() throws {
+    // swiftlint:disable:next line_length
+    let xml = """
+    <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+    <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><dimension ref="A1:A1"/><sheetData/><sheetProtection algorithmName="SHA-512" hashValue="abc123==" saltValue="def456==" spinCount="100000" sheet="1"/></worksheet>
+    """.data(using: .utf8)!
+
+    let ws = try XMLDecoder().decode(Worksheet.self, from: xml)
+    let protection = try XCTUnwrap(ws.sheetProtection)
+    XCTAssertEqual(protection.sheet, true)
+    XCTAssertEqual(protection.algorithmName, "SHA-512")
+    XCTAssertEqual(protection.hashValue, "abc123==")
+    XCTAssertEqual(protection.saltValue, "def456==")
+    XCTAssertEqual(protection.spinCount, 100_000)
+    XCTAssertNil(protection.password)
+  }
 }

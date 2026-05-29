@@ -42,14 +42,32 @@ public struct Workbook: Codable, Equatable {
   }
 
   public struct Sheet: Codable, Equatable {
+    /** Visibility of a sheet in the workbook.
+     [Microsoft docs](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.spreadsheet.sheetstatevalues).
+     */
+    public enum State: String, Codable, Equatable {
+      /// Sheet is visible in the workbook UI.
+      case visible
+      /// Sheet is hidden but can be unhidden by the user from the workbook UI.
+      case hidden
+      /// Sheet is hidden and cannot be unhidden from the workbook UI;
+      /// only programmatic access can change the state back.
+      case veryHidden
+    }
+
     public let name: String?
     public let id: String
     public let relationship: String
+
+    /// Visibility of the sheet. `nil` means the attribute is absent, which is
+    /// equivalent to `.visible` per the XLSX specification.
+    public let state: State?
 
     enum CodingKeys: String, CodingKey {
       case name
       case id = "sheetId"
       case relationship = "r:id"
+      case state
     }
   }
 

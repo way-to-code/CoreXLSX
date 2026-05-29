@@ -22,7 +22,8 @@ import XMLCoder
 private let parsedSheet = [
   Workbook.Sheet(name: "Sheet 1",
                  id: "1",
-                 relationship: "rId4"),
+                 relationship: "rId4",
+                 state: nil),
 ]
 
 // swiftlint:disable line_length
@@ -38,12 +39,14 @@ private let expectedWorkbook =
     .init(
       name: "Summary",
       id: "1",
-      relationship: "rId4"
+      relationship: "rId4",
+      state: .visible
     ),
     .init(
       name: "General",
       id: "2",
-      relationship: "rId5"
+      relationship: "rId5",
+      state: .visible
     ),
   ]))
 
@@ -80,5 +83,20 @@ final class WorkbookTests: XCTestCase {
     let decoded = try decoder.decode(Workbook.self, from: workbookNoViews)
 
     XCTAssertEqual(decoded, expectedWorkbook)
+  }
+
+  func testSheetStateHidden() throws {
+    // swiftlint:disable:next line_length
+    let xml = """
+    <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+    <workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="Main" sheetId="1" r:id="rId1"/><sheet state="hidden" name="Strings" sheetId="2" r:id="rId2"/><sheet state="veryHidden" name="Secret" sheetId="3" r:id="rId3"/></sheets></workbook>
+    """.data(using: .utf8)!
+
+    let decoder = XMLDecoder()
+    decoder.shouldProcessNamespaces = true
+
+    let decoded = try decoder.decode(Workbook.self, from: xml)
+    let states = decoded.sheets.items.map { $0.state }
+    XCTAssertEqual(states, [nil, .hidden, .veryHidden])
   }
 }

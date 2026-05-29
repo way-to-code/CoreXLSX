@@ -132,6 +132,10 @@ public struct Worksheet: Codable {
     data ?? Data(rows: [])
   }
 
+  /// Protection settings for the sheet, when present. `nil` means the worksheet
+  /// has no `<sheetProtection>` element and is therefore not protected.
+  public let sheetProtection: SheetProtection?
+
   public let mergeCells: MergeCells?
 
   enum CodingKeys: String, CodingKey {
@@ -141,8 +145,81 @@ public struct Worksheet: Codable {
     case formatProperties = "sheetFormatPr"
     case columns = "cols"
     case data = "sheetData"
+    case sheetProtection
     case mergeCells
   }
+}
+
+/** Protection settings for a worksheet, mapped 1:1 to the `<sheetProtection>` XML
+ element. Each property mirrors the XLSX attribute of the same name. All properties
+ are optional — `nil` means the attribute was absent and the XLSX-defined default
+ applies (see the spec or the per-property docs below).
+ [ECMA-376 sheetProtection
+  reference](https://learn.microsoft.com/en-us/dotnet/api/documentformat.openxml.spreadsheet.sheetprotection).
+ */
+public struct SheetProtection: Codable, Equatable {
+  /// Whether protection is enabled on the sheet. Default: `false`.
+  public let sheet: Bool?
+
+  /// Legacy 16-bit hash of the protection password.
+  public let password: String?
+
+  /// Cryptographic algorithm used for `hashValue`, e.g. `"SHA-512"`.
+  public let algorithmName: String?
+
+  /// Password hash (modern, used together with `algorithmName`/`saltValue`/`spinCount`).
+  public let hashValue: String?
+
+  /// Salt for the password hash.
+  public let saltValue: String?
+
+  /// Hash iteration count for the password hash.
+  public let spinCount: Int?
+
+  /// Whether drawing objects are protected. Default: `false`.
+  public let objects: Bool?
+
+  /// Whether scenarios are protected. Default: `false`.
+  public let scenarios: Bool?
+
+  /// Whether the user is allowed to format cells. Default: `true`.
+  public let formatCells: Bool?
+
+  /// Whether the user is allowed to format columns. Default: `true`.
+  public let formatColumns: Bool?
+
+  /// Whether the user is allowed to format rows. Default: `true`.
+  public let formatRows: Bool?
+
+  /// Whether the user is allowed to insert columns. Default: `true`.
+  public let insertColumns: Bool?
+
+  /// Whether the user is allowed to insert rows. Default: `true`.
+  public let insertRows: Bool?
+
+  /// Whether the user is allowed to insert hyperlinks. Default: `true`.
+  public let insertHyperlinks: Bool?
+
+  /// Whether the user is allowed to delete columns. Default: `true`.
+  public let deleteColumns: Bool?
+
+  /// Whether the user is allowed to delete rows. Default: `true`.
+  public let deleteRows: Bool?
+
+  /// Whether the user is allowed to select locked cells. Default: `false`.
+  public let selectLockedCells: Bool?
+
+  /// Whether the user is allowed to select unlocked cells. Default: `false`.
+  public let selectUnlockedCells: Bool?
+
+  /// Whether the user is allowed to sort. Default: `true`.
+  public let sort: Bool?
+
+  /// Whether the user is allowed to use AutoFilter. Default: `true`.
+  public let autoFilter: Bool?
+
+  /// Whether the user is allowed to use PivotTables. Default: `true`.
+  public let pivotTables: Bool?
 }
 
 @available(*, deprecated, renamed: "PageSetUpProperties")
