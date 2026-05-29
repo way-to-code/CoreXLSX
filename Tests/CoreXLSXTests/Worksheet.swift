@@ -112,35 +112,40 @@ private let parsed = [
     max: 1,
     width: 26.42578125,
     style: nil,
-    customWidth: true
+    customWidth: true,
+    hidden: nil
   ),
   Column(
     min: 2,
     max: 2,
     width: 16.7109375,
     style: nil,
-    customWidth: true
+    customWidth: true,
+    hidden: nil
   ),
   Column(
     min: 3,
     max: 3,
     width: 9.140625,
     style: 1,
-    customWidth: nil
+    customWidth: nil,
+    hidden: nil
   ),
   Column(
     min: 4,
     max: 4,
     width: 82,
     style: nil,
-    customWidth: true
+    customWidth: true,
+    hidden: nil
   ),
   Column(
     min: 6,
     max: 6,
     width: 16,
     style: nil,
-    customWidth: true
+    customWidth: true,
+    hidden: nil
   ),
 ]
 
