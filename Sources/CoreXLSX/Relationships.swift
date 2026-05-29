@@ -160,6 +160,25 @@ public struct Relationship: Codable, Equatable {
   /// The path to this entity in the `.xlsx` archive.
   public let target: String
 
+  /// Construct a Relationship from a known SchemaType.
+  /// Stores the schema's `rawValue` as `rawType`. The computed `type`
+  /// property will then return the same case.
+  public init(id: String, type: SchemaType, target: String) {
+    self.id = id
+    self.rawType = type.rawValue
+    self.target = target
+  }
+
+  /// Construct a Relationship from a raw type string.
+  /// Use this when the schema URL may not correspond to a known
+  /// `SchemaType` case — `type` will return `nil` in that situation,
+  /// but the relationship remains fully readable via `rawType`.
+  public init(id: String, rawType: String, target: String) {
+    self.id = id
+    self.rawType = rawType
+    self.target = target
+  }
+
   func path(from root: String) -> String {
     Path(target).isRoot ? target : "\(root)/\(target)"
   }
